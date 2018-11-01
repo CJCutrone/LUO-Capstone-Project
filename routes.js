@@ -1,0 +1,1 @@
+exports.loginPage = (req, resp) => resp.render("login", { title: "Alliance Ministries: Managment" });
