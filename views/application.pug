@@ -1,0 +1,30 @@
+doctype html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"
+html(xmlns="http://www.w3.org/1999/xhtml", lang="en-US")
+    head
+        title= title
+        meta(content='text/html; charset=utf-8', http-equiv='Content-Type')
+        meta(content='width=device-width,initial-scale=1.0', name='viewport')
+        meta(content='Learning NodeJS', name='description')
+        meta(content='#1e88e5', name='theme-color')
+        link(rel='stylesheet', href='https://fonts.googleapis.com/css?family=Roboto:100,400|Material+Icons')
+        link(rel='stylesheet', href='/css/home.css')
+    body
+        div(id="app")&attributes({"v-cloak": "", ":class": "isLoading ? 'loading' : 'done-loading'"})
+            div(class="background hide-on-load")
+            div(class="center-content hide-on-load")
+                div(class="loader")
+            ul(class="navbar")
+                li(class="navbar-icon")
+                    img(class="logo", src="/imgs/logos/a_min.png")
+                li(class="navbar-icon")
+                    i(class="navbar-mi material-icons")&attributes({"v-on:click": "changeType('projects')"}) attach_money
+                li(class="navbar-icon")
+                    i(class="navbar-mi material-icons")&attributes({"v-on:click": "changeType('volunteers')"}) person
+                li(class="navbar-icon bottom")
+                    i(class="navbar-mi material-icons")&attributes({"v-on:click": "window.location.href='/logout'"}) exit_to_app
+            div(class="content")&attributes({"v-show": "type == 'projects'"})
+                ul(class="month-wrapper")
+                    li(class="month")&attributes({"v-for": "(month, index) in months", ":class": "index == currentMonth ? 'selected-month': ''", "v-on:click": "setMonth(index)"}) {{ month }}
+            div(class="content")&attributes({"v-show": "type == 'volunteers'"}) test1
+        script(src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.17/vue.min.js")
+        script(type="text/javascript", src="/src/application.js")

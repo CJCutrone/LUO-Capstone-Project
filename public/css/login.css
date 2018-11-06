@@ -1,0 +1,55 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #6933d1;
+}
+
+.center-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.signin-prompt {
+    margin-bottom: 4px;
+    color: #FFFFFF;
+    font-size: 24px;
+    text-align: center;
+}
+
+.floating-logo {
+    position: absolute;
+    top: 8px;
+    left: 16px;
+    height: 32px;
+}
+
+.oauth-button {
+    display: block;
+    background-color: #FFFFFF;
+    height: 48px;
+    width: 200px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px 1px rgba(0,0,0,0.25);
+}
+.oauth-button:hover {
+    box-shadow: 0 2px 4px 1px rgba(0,0,0,0.35);
+}
+.oauth-button-logo {
+    padding: 8px;
+    height: 32px;
+}
+.oauth-name {
+    display: inline-block;
+    line-height: 48px;
+    width: calc(100% - 48px);
+    color: #6933d1;
+    font-size: 20px;
+    font-weight: 300;
+    text-transform: uppercase;
+    text-align: center;
+    vertical-align: top;
+}

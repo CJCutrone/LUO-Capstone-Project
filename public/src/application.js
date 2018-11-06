@@ -1,0 +1,3 @@
+"use strict";var app=new Vue({el:"#app",data:{isLoading:!0,type:"projects",currentMonth:0,months:["Jan","Feb","Mar","Apr","May","June","July","Aug","Sep","Oct","Nov","Dec"]}}),loadData=function(){//TODO: load data
+Vue.set(app,"isLoading",!0),setTimeout(function(){console.log("done"),Vue.set(app,"isLoading",!1)},1)},changeType=function(a){Vue.set(app,"type",a),loadData("/api/data/".concat(a))},setMonth=function(){};window.addEventListener("load",function(){loadData("")});
+//# sourceMappingURL=application.js.map
