@@ -17,14 +17,131 @@ html(xmlns="http://www.w3.org/1999/xhtml", lang="en-US")
                 li(class="navbar-icon")
                     img(class="logo", src="/imgs/logos/a_min.png")
                 li(class="navbar-icon")
-                    i(class="navbar-mi material-icons")&attributes({"v-on:click": "changeType('projects')"}) attach_money
+                    i(class="navbar-mi material-icons")&attributes({
+                            "v-on:click": "changeType('months')",
+                            ":class": "type == 'months'? 'selected': ''"
+                        }) attach_money
                 li(class="navbar-icon")
-                    i(class="navbar-mi material-icons")&attributes({"v-on:click": "changeType('volunteers')"}) person
+                    i(class="navbar-mi material-icons")&attributes({
+                            "v-on:click": "changeType('volunteers')",
+                            ":class": "type == 'volunteers'? 'selected': ''"
+                        }) person
                 li(class="navbar-icon bottom")
                     i(class="navbar-mi material-icons")&attributes({"v-on:click": "window.location.href='/logout'"}) exit_to_app
-            div(class="content")&attributes({"v-show": "type == 'projects'"})
+            div(class="content")&attributes({"v-show": "type == 'months'"})
                 ul(class="month-wrapper")
-                    li(class="month")&attributes({"v-for": "(month, index) in months", ":class": "index == currentMonth ? 'selected-month': ''", "v-on:click": "setMonth(index)"}) {{ month }}
-            div(class="content")&attributes({"v-show": "type == 'volunteers'"}) test1
+                    li(class="month")&attributes({
+                        "v-for": "(month, index) in months", 
+                        "v-on:click": "setMonth(index)",
+                        ":class": "index == currentMonth ? 'selected-month': ''"}) {{ month.name }}
+                div(class="sub-content")&attributes({
+                    "v-show": "(months[currentMonth].projects || []).length > 0"
+                })
+                    div(class="card chart")
+                        ul(class="line-chart-base")
+                            li(class="line-chart-y")&attributes({
+                                "v-for": "y in getChartY"
+                            }) {{ y }}
+                        div(class="bar-wrapper")
+                            div(class="bar")&attributes({
+                                "v-for": "p in months[currentMonth].projects",
+                                ":style": "{height: (100 / (getRoofOfChart / p.cost)) + '%' }"
+                            })
+                                div(class="bar-text")
+                                    span {{ p.country }}
+                                    span {{ p.type }}
+                    div(class="projects")
+                        div(class="card edited-project")&attributes({
+                            ":class": "editedProject.country != undefined ? 'show': ''"
+                        })
+                            input(class='project-country', placeholder="Country", type='text')&attributes({
+                                "v-model": "editedProject.country"
+                            }) 
+                            input(class='project-manager', placeholder="Manager", type='text')&attributes({
+                                "v-model": "editedProject.manager"
+                            }) 
+                            input(class='project-type', placeholder="Type", type='text')&attributes({
+                                "v-model": "editedProject.type"
+                            }) 
+                            input(class='project-cost', placeholder="Cost", type='number')&attributes({
+                                "v-model": "editedProject.cost"
+                            })
+                            input(class='project-id', type='hidden')&attributes({
+                                "v-model": "editedProject.projectID"
+                            })
+                            div(class="endProject-wrapper")
+                                input(id="endProject", type="checkbox")&attributes({
+                                    "v-model": "editedProject.endsOnCurrentMonth"
+                                }) 
+                                label(for="endProject") Project ends this month
+                            button(class='button delete')&attributes({
+                                "v-show": "editedProject.projectID != ''",
+                                "v-on:click": "deleteProject()"
+                            }) Delete
+                            div(class='manage-buttons')
+                                button(class='button cancel')&attributes({
+                                    "v-on:click": "editProject()"
+                                }) Cancel
+                                button(class='button confirm')&attributes({
+                                    "v-on:click": "saveProject()"
+                                }) Save
+                        ul(class="card projects-list")
+                            li(class="project")&attributes({
+                                "v-for": "p in months[currentMonth].projects",
+                                "v-on:click": "editProject(p.projectID)"
+                            })
+                                p(class="project-country") {{ p.country }}
+                                    span(class="project-manager") {{ p.manager }}
+                                p(class="project-type") {{ p.type }}
+                                    span(class="project-cost") {{ toCurrency(p.cost) }}
+                            li(class="buttons")
+                                button(class="button newProject")&attributes({
+                                    "v-on:click": "newProject()"
+                                }) New Project
+            div(class="content")&attributes({"v-show": "type == 'volunteers'"})
+                div(class="volunteer-wrapper")
+                    div(class="card edit-volunteer")&attributes({
+                        ":class": "editedVolunteer.name != undefined ? 'show': ''"
+                    })
+                        input(class='volunteer-name', placeholder="Name", type='text')&attributes({
+                            "v-model": "editedVolunteer.name"
+                        })
+                        input(class='volunteer-address', placeholder="Address", type='text')&attributes({
+                            "v-model": "editedVolunteer.address"
+                        })
+                        input(class='volunteer-city', placeholder="Cty", type='text')&attributes({
+                            "v-model": "editedVolunteer.city"
+                        })
+                        input(class='volunteer-locality', placeholder="Locality", type='text')&attributes({
+                            "v-model": "editedVolunteer.locality"
+                        })
+                        input(class='volunteer-country', placeholder="Country", type='text')&attributes({
+                            "v-model": "editedVolunteer.country"
+                        })
+                        input(class='volunteer-postal', placeholder="Postal", type='text')&attributes({
+                            "v-model": "editedVolunteer.postal"
+                        })
+                        button(class='button delete')&attributes({
+                            "v-show": "editedProject.projectID != ''",
+                            "v-on:click": "deleteVolunteer()"
+                        }) Delete
+                        div(class='manage-buttons')
+                            button(class='button cancel')&attributes({
+                                "v-on:click": "editVolunteer()"
+                            }) Cancel
+                            button(class='button confirm')&attributes({
+                                "v-on:click": "saveVolunteer()"
+                            }) Save
+                    ul(class="card volunteers")
+                        li(class="volunteer")&attributes({
+                            "v-for": "volunteer in volunteers",
+                            "v-on:click": "editVolunteer(volunteer.volunteerID)"
+                        })
+                            p(class="volunteer-name") {{ volunteer.name }}
+                            p(class="volunteer-location") {{ getFullAddress(volunteer) }}
+                        li(class="buttons")
+                            button(class="button newVolunteer")&attributes({
+                                "v-on:click": "newVolunteer()"
+                            }) New Volunteer
         script(src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.17/vue.min.js")
         script(type="text/javascript", src="/src/application.js")

@@ -1,0 +1,61 @@
+@accentColor: #3296ff;
+@accentColorHover: #2a81dd;
+@dangerColor: #ff3232;
+@dangerColorHover: #dd2a2a;
+@darkGray: #cccccc;
+@lightGray: #eeeeee;
+@normalShadow: 0 2px 4px 0 rgba(0, 0, 0, 0.25);
+@hoverShadow: 0 2px 4px 0 rgba(0, 0, 0, 0.45);
+
+* {
+    margin: 0;
+    padding: 0;
+}
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: @accentColor;
+    .floating-logo {
+        position: absolute;
+        top: 8px;
+        left: 16px;
+        height: 32px;
+    }
+    .center-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        .signin-prompt {
+            margin-bottom: 4px;
+            color: #FFFFFF;
+            font-size: 24px;
+            text-align: center;
+        }
+        .oauth-button {
+            display: block;
+            background-color: #FFFFFF;
+            height: 48px;
+            width: 200px;
+            border-radius: 5px;
+            box-shadow: @normalShadow;
+            &:hover{
+                box-shadow: @hoverShadow;
+            }
+            .oauth-button-logo {
+                padding: 8px;
+                height: 32px;
+            }
+            .oauth-name {
+                display: inline-block;
+                line-height: 48px;
+                width: calc(~"100% - 48px");
+                color: @accentColor;
+                font-size: 20px;
+                font-weight: 300;
+                text-transform: uppercase;
+                text-align: center;
+                vertical-align: top;
+            }
+        }
+    }
+}

@@ -1,13 +1,13 @@
-const presets = [
-    [
-        "@babel/env",
-        {
-            targets: "> 0.25%, not dead",
-            useBuiltIns: "usage",
-        },
-    ],
-    [
-        "minify"
-    ]
-];
-module.exports = { presets };
+module.exports =  function (api) {
+    api.cache(true);
+    return {
+        presets: [
+            [
+                "@babel/env"
+            ],
+            [
+                "minify"
+            ]
+        ]
+    }
+};
