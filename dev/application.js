@@ -15,7 +15,9 @@ const app = new Vue({
         },
         newVolunteer(){
             this.editedVolunteer = {
-                name: "",
+                firstName: "",
+                lastName: "",
+                email: "",
                 address: "",
                 city: "",
                 locality: "",
@@ -24,29 +26,30 @@ const app = new Vue({
             }
         },
         deleteVolunteer(){
-            removeVolunteer(this.editedVolunteer.volunteerID, () => {
-                this.volunteers = this.volunteers.filter(it => it.volunteerID != this.editedVolunteer.volunteerID)
+            removeVolunteer(this.editedVolunteer.userID, () => {
+                this.volunteers = this.volunteers.filter(it => it.userID != this.editedVolunteer.userID)
+                this.editedVolunteer = {};
             })
         },
-        editVolunteer(volunteerID){
+        editVolunteer(userID){
             this.editedVolunteer = JSON.parse(
                 JSON.stringify(
-                    this.volunteers.filter(it => it.volunteerID == volunteerID)[0] || {}
+                    this.volunteers.filter(it => it.userID == userID)[0] || {}
                 )
             );
         },
         saveVolunteer(){
-            if(this.editedVolunteer.volunteerID){
-                const _newList = this.volunteers.filter(it => it.volunteerID != this.editedVolunteer.volunteerID);
+            if(this.editedVolunteer.userID){
+                const _newList = this.volunteers.filter(it => it.userID != this.editedVolunteer.userID);
                 _newList.push(JSON.parse(JSON.stringify(this.editedVolunteer)));
                 sendVolunteer(this.editedVolunteer, () => {
                     this.editedVolunteer = {};
-                    this.months[this.currentMonth].projects = _newList.sort(sortProjects);
+                    this.volunteers = _newList.sort(sortProjects);
                 });
             } else {
                 sendVolunteer(this.editedVolunteer, (project) => {
                     const _newList = this.volunteers;
-                    this.editedVolunteer.volunteerID = project.volunteerID;
+                    this.editedVolunteer.userID = project.userID;
 
                     _newList.push(this.editedVolunteer);
                     
@@ -66,10 +69,9 @@ const app = new Vue({
         },
         deleteProject(){
             removeProject(this.editedProject.projectID, () => {
-                this.months[this.currentMonth].projects = 
-                this.months[this.currentMonth]
-                    .projects
-                    .filter(it => it.projectID != this.editedProject.projectID);
+                this.months.forEach(it => {
+                    it.projects = it.projects.filter(it => it.projectID != this.editedProject.projectID);
+                });
                 this.editedProject = {};
             })
         },
@@ -83,25 +85,29 @@ const app = new Vue({
             );
         },
         saveProject() {
+            this.editedProject.currentMonth = this.currentMonth;
             if(this.editedProject.projectID){
-                const _newList =
-                    this.months[this.currentMonth]
-                        .projects
-                        .filter(it => it.projectID != this.editedProject.projectID);
-                _newList.push(JSON.parse(JSON.stringify(this.editedProject)));
+                this.months.forEach((it, index) => {
+                    it.projects = it.projects.filter(it => it.projectID != this.editedProject.projectID)
+                    if (!(this.editedProject.endsOnCurrentMonth && index > this.currentMonth))
+                        it.projects.push(JSON.parse(JSON.stringify(this.editedProject)))
+                    it.projects = it.projects.sort(sortProjects);
+                });
                 sendProject(this.editedProject, () => {
                     this.editedProject = {};
-                    this.months[this.currentMonth].projects = _newList.sort(sortProjects);
                 });
             } else {
                 sendProject(this.editedProject, (project) => {
-                    const _newList = this.months[this.currentMonth].projects
                     this.editedProject.projectID = project.projectID;
 
-                    _newList.push(this.editedProject);
-                    
+                    this.months = this.months.map((it, index) => {
+                        if(index >= this.currentMonth){
+                            it.projects.push(JSON.parse(JSON.stringify(this.editedProject)))
+                            it.projects = it.projects.sort(sortProjects);
+                        }
+                        return it;
+                    });
                     this.editedProject = {};
-                    this.months[this.currentMonth].projects = _newList.sort(sortProjects);
                 });
             }
         }
@@ -124,17 +130,17 @@ const app = new Vue({
     }
 });
 
-const removeVolunteer = (volunteerID, callback) => 
-    post(`/api/data/remove/volunteer`, volunteerID).then(callback);
+const removeVolunteer = (userID, callback) => 
+    post(`/api/data/remove/volunteer`, { userID: userID }).then(callback);
 
 const removeProject = (projectID, callback) => 
-    post(`/api/data/remove/project`, { projectID }).then(callback);
+    post(`/api/data/remove/project`, { projectID: projectID }).then(callback);
 
 const sendProject = (project, callback) => 
-    post(`/api/data/edit/project`, project).then(callback);
+    post(`/api/data/edit/project`, { project: project }).then(callback);
 
 const sendVolunteer = (volunteer, callback) => 
-    post(`/api/data/edit/volunteer`, volunteer).then(callback);
+    post(`/api/data/edit/volunteer`, { volunteer: volunteer }).then(callback);
 
 const sortProjects = (a, b) => {
     if(a.country == b.country) return a.type > b.type ? 1 : -1;
@@ -168,6 +174,7 @@ const loadData = (type) => {
                 it.projects = _projects;
                 return it;
             });
+
         Vue.set(app, type, response)
         Vue.set(app, "isLoading", false);
     });

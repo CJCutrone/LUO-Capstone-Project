@@ -34,10 +34,10 @@ html(xmlns="http://www.w3.org/1999/xhtml", lang="en-US")
                         "v-for": "(month, index) in months", 
                         "v-on:click": "setMonth(index)",
                         ":class": "index == currentMonth ? 'selected-month': ''"}) {{ month.name }}
-                div(class="sub-content")&attributes({
-                    "v-show": "(months[currentMonth].projects || []).length > 0"
-                })
-                    div(class="card chart")
+                div(class="sub-content")
+                    div(class="card chart")&attributes({
+                        "v-show": "(months[currentMonth].projects || []).length > 0 && getRoofOfChart > 0"
+                    })
                         ul(class="line-chart-base")
                             li(class="line-chart-y")&attributes({
                                 "v-for": "y in getChartY"
@@ -101,10 +101,16 @@ html(xmlns="http://www.w3.org/1999/xhtml", lang="en-US")
             div(class="content")&attributes({"v-show": "type == 'volunteers'"})
                 div(class="volunteer-wrapper")
                     div(class="card edit-volunteer")&attributes({
-                        ":class": "editedVolunteer.name != undefined ? 'show': ''"
+                        ":class": "editedVolunteer.firstName != undefined ? 'show': ''"
                     })
-                        input(class='volunteer-name', placeholder="Name", type='text')&attributes({
-                            "v-model": "editedVolunteer.name"
+                        input(class='volunteer-name', placeholder="First Name", type='text')&attributes({
+                            "v-model": "editedVolunteer.firstName"
+                        })
+                        input(class='volunteer-name', placeholder="Last Name", type='text')&attributes({
+                            "v-model": "editedVolunteer.lastName"
+                        })
+                        input(class='volunteer-name', placeholder="Email", type='text')&attributes({
+                            "v-model": "editedVolunteer.email"
                         })
                         input(class='volunteer-address', placeholder="Address", type='text')&attributes({
                             "v-model": "editedVolunteer.address"
@@ -121,6 +127,9 @@ html(xmlns="http://www.w3.org/1999/xhtml", lang="en-US")
                         input(class='volunteer-postal', placeholder="Postal", type='text')&attributes({
                             "v-model": "editedVolunteer.postal"
                         })
+                        input(class='volunteer-id', type='hidden')&attributes({
+                            "v-model": "editedVolunteer.userID"
+                        })
                         button(class='button delete')&attributes({
                             "v-show": "editedProject.projectID != ''",
                             "v-on:click": "deleteVolunteer()"
@@ -135,9 +144,10 @@ html(xmlns="http://www.w3.org/1999/xhtml", lang="en-US")
                     ul(class="card volunteers")
                         li(class="volunteer")&attributes({
                             "v-for": "volunteer in volunteers",
-                            "v-on:click": "editVolunteer(volunteer.volunteerID)"
+                            "v-on:click": "editVolunteer(volunteer.userID)"
                         })
-                            p(class="volunteer-name") {{ volunteer.name }}
+                            p(class="volunteer-name") {{ volunteer.lastName + ", " + volunteer.firstName }}
+                                span(class="volunteer-email") {{ volunteer.email }}
                             p(class="volunteer-location") {{ getFullAddress(volunteer) }}
                         li(class="buttons")
                             button(class="button newVolunteer")&attributes({

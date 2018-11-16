@@ -38,4 +38,4 @@ const server = express()
                 .post('/api/data/edit/volunteer', authentication.requireAuthentication, data.updateVolunteer)
                 .post('/api/data/remove/project', authentication.requireAuthentication, data.removeProject)
                 .post('/api/data/remove/volunteer', authentication.requireAuthentication, data.removeVolunteer)
-                .listen(port)
+                .listen(port);
