@@ -1,5 +1,8 @@
 import mysql from "mysql";
 
+/**
+ * @author Camille Cutrone
+ */
 const pool = mysql.createPool({
     connectionLimit: 20,
     host: process.env.herokuSQLHost,
@@ -10,6 +13,13 @@ const pool = mysql.createPool({
     multipleStatements: true
 });
 
+/**
+ * Retrives a connection from the pool, and puts 
+ * the result of the query into a promise
+ * @param { String } sql 
+ * @param { Array } data 
+ * @author Camille Cutrone
+ */
 const query = async (sql, data) => 
     new Promise((resolve, reject) => {
         pool.query(sql, data, (err, results) =>{

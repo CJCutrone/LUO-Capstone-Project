@@ -1,4 +1,6 @@
 // ONLY ENABLE IN TEST ENV -- home network messes up certain outgoing connections, rather than manipulate the home network settings, enable this.
+/* @author Camille Cutrone */
+
 if(process.env.isDevEnvironment){
     process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'; 
 }

@@ -1,3 +1,6 @@
+/**
+ * @author Camille Cutrone
+ */
 const app = new Vue({
     el: "#app",
     data: {
@@ -32,16 +35,13 @@ const app = new Vue({
             })
         },
         editVolunteer(userID){
-            this.editedVolunteer = JSON.parse(
-                JSON.stringify(
-                    this.volunteers.filter(it => it.userID == userID)[0] || {}
-                )
-            );
+            const _data = this.volunteers.filter(it => it.userID == userID)[0] || {}
+            this.editedVolunteer = clone(_data);
         },
         saveVolunteer(){
             if(this.editedVolunteer.userID){
                 const _newList = this.volunteers.filter(it => it.userID != this.editedVolunteer.userID);
-                _newList.push(JSON.parse(JSON.stringify(this.editedVolunteer)));
+                _newList.push(clone(this.editedVolunteer));
                 sendVolunteer(this.editedVolunteer, () => {
                     this.editedVolunteer = {};
                     this.volunteers = _newList.sort(sortProjects);
@@ -76,13 +76,8 @@ const app = new Vue({
             })
         },
         editProject(projectID){
-            this.editedProject = JSON.parse(
-                JSON.stringify(
-                    this.months[this.currentMonth]
-                        .projects
-                        .filter(it => it.projectID == projectID)[0] || {}
-                )
-            );
+            const _data = this.months[this.currentMonth].projects.filter(it => it.projectID == projectID)[0] || {}
+            this.editedProject = clone(_data);
         },
         saveProject() {
             this.editedProject.currentMonth = this.currentMonth;
@@ -90,7 +85,7 @@ const app = new Vue({
                 this.months.forEach((it, index) => {
                     it.projects = it.projects.filter(it => it.projectID != this.editedProject.projectID)
                     if (!(this.editedProject.endsOnCurrentMonth && index > this.currentMonth))
-                        it.projects.push(JSON.parse(JSON.stringify(this.editedProject)))
+                        it.projects.push(clone(this.editedProject))
                     it.projects = it.projects.sort(sortProjects);
                 });
                 sendProject(this.editedProject, () => {
@@ -102,7 +97,7 @@ const app = new Vue({
 
                     this.months = this.months.map((it, index) => {
                         if(index >= this.currentMonth){
-                            it.projects.push(JSON.parse(JSON.stringify(this.editedProject)))
+                            it.projects.push(clone(this.editedProject))
                             it.projects = it.projects.sort(sortProjects);
                         }
                         return it;
@@ -130,23 +125,58 @@ const app = new Vue({
     }
 });
 
+/**
+ * Sends POST request to delete volunteer from the database
+ * @param { String } userID
+ * @param { Function } callback 
+ * @author Camille Cutrone
+ */
 const removeVolunteer = (userID, callback) => 
     post(`/api/data/remove/volunteer`, { userID: userID }).then(callback);
 
+/**
+ * Sends POST request to delete project from the database
+ * @param { String } projectID
+ * @param { Function } callback 
+ * @author Camille Cutrone
+ */
 const removeProject = (projectID, callback) => 
     post(`/api/data/remove/project`, { projectID: projectID }).then(callback);
 
+/**
+ * Sends the updated project information to the server
+ * @param { JSON } project 
+ * @param { Function } callback 
+ * @author Camille Cutrone
+ */
 const sendProject = (project, callback) => 
     post(`/api/data/edit/project`, { project: project }).then(callback);
 
+/**
+ * Sends the updated volunteer information to the server
+ * @param { JSON } volunteer 
+ * @param { Function } callback 
+ * @author Camille Cutrone
+ */
 const sendVolunteer = (volunteer, callback) => 
     post(`/api/data/edit/volunteer`, { volunteer: volunteer }).then(callback);
 
+/**
+ * Sorts the projects based on country name and project type
+ * @param { JSON } a 
+ * @param { JSON } b 
+ * @author Camille Cutrone
+ */
 const sortProjects = (a, b) => {
     if(a.country == b.country) return a.type > b.type ? 1 : -1;
     else return a.country > b.country ? 1 : -1;
 };
 
+/**
+ * Converts a number in string format to US currency
+ * @param { String } string 
+ * @author Camille Cutrone
+ */
 const toCurrency = (string) => 
     parseFloat(string)
         .toLocaleString(undefined, { 
@@ -154,17 +184,33 @@ const toCurrency = (string) =>
             currency: "USD" 
         });
 
+/**
+ * Updates the type variable and loads the data
+ * @param { String } type Either 'months' or 'volunteers'
+ * @author Camille Cutrone
+ */
 const changeType = (type) => {
     Vue.set(app, "editedProject", {});
     Vue.set(app, "type", type);
     loadData(type);
 }
 
+/**
+ * Sets the current month
+ * @param { Number } month 
+ * @author Camille Cutrone
+ */
 const setMonth = (month) => {
     Vue.set(app, "editedProject", {});
     Vue.set(app, "currentMonth", month);
 }
 
+/**
+ * Hides the application while a GET request is made to 
+ * the server to retrieve the data
+ * @param { String } type Either 'months' or 'volunteers'
+ * @author Camille Cutrone
+ */
 const loadData = (type) => {
     Vue.set(app, "isLoading", true);
     get(`/api/data/${type}`).then((response)=> {
@@ -180,6 +226,12 @@ const loadData = (type) => {
     });
 }
 
+/**
+ * Executes a POST request and responds as a Promise
+ * @param { String } url 
+ * @param { JSON } data 
+ * @author Camille Cutrone
+ */
 const post = (url, data) => new Promise((resolve, reject) => {
     const _req = new XMLHttpRequest();
     _req.onload = () => {
@@ -192,6 +244,11 @@ const post = (url, data) => new Promise((resolve, reject) => {
     _req.send(JSON.stringify(data));
 });
 
+/**
+ * Executes a GET request and responds as a Promise
+ * @param { String } url 
+ * @author Camille Cutrone
+ */
 const get = (url) => new Promise((resolve, reject) => {
     const _req = new XMLHttpRequest();
     _req.onload = () => {
@@ -203,6 +260,13 @@ const get = (url) => new Promise((resolve, reject) => {
     _req.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     _req.send();
 });
+
+/**
+ * Clones the JSON object as a seperate object
+ * @param { JSON } obj 
+ * @author Camille Cutrone
+ */
+const clone = (obj) => JSON.parse(JSON.stringify(obj));
 
 window.addEventListener("load", ()=>{
     loadData("months");

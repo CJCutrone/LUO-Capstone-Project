@@ -1,3 +1,4 @@
+-- @author Camille Cutrone
 create table payments(
 	paymentID varchar(255) not null,
 	cost float null,

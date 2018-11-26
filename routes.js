@@ -1,3 +1,6 @@
+/**
+ * @author Camille Cutrone
+ */
 module.exports = {
     __dirname,
     logoutPage: (req, resp) =>{
