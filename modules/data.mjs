@@ -144,13 +144,15 @@ const updateVolunteer = async (req, resp) => {
                     [_volunteer.userID, _volunteer.firstName, _volunteer.lastName, _volunteer.email, 
                      _volunteer.userID, _volunteer.address, _volunteer.city, _volunteer.locality, _volunteer.country, _volunteer.postal, _month])
             .then(_ => resp.json({ userID: _volunteer.userID }))
+            .catch(console.error);
     } else {
         await database
             .query("UPDATE users SET firstName=?, lastName=?, email=? WHERE userID=?;\
                     UPDATE volunteer_information SET address=?, city=?, locality=?, country=?, postal=? WHERE userID=?;", 
                     [_volunteer.firstName, _volunteer.lastName, _volunteer.email, _volunteer.userID,
                      _volunteer.address, _volunteer.city, _volunteer.locality, _volunteer.country, _volunteer.postal, _volunteer.userID])
-            .then(_ => resp.json({ userID: _volunteer.userID }));
+            .then(_ => resp.json({ userID: _volunteer.userID }))
+            .catch(console.error);
     }
 }
 
@@ -175,7 +177,7 @@ const removeProject = (req, resp) => {
 const removeVolunteer = (req, resp) => {
     const _userID = req.body.userID;
     database
-        .query("DELETE FROM user_logins WHERE userID=?; DELETE FROM users WHERE userID=?;", [ _userID, _userID ])
+        .query("DELETE FROM user_logins WHERE userID=?; DELETE FROM volunteer_information WHERE userID=?; DELETE FROM users WHERE userID=?;", [ _userID, _userID, _userID ])
         .then(_ => resp.json({ success: true }));
 }
 
