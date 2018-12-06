@@ -63,7 +63,7 @@ const requireAuthenticationAPI = (req, resp, next) => {
     //     req.session.oauth2return = req.originalUrl;
     //     resp.json({ error: { id: -1, message: "Must be signed in" }});
     // }else 
-    next();
+        next();
 };
 
 /**

@@ -88,13 +88,11 @@ const app = new Vue({
                         it.projects.push(clone(this.editedProject))
                     it.projects = it.projects.sort(sortProjects);
                 });
-                sendProject(this.editedProject, () => {
-                    this.editedProject = {};
-                });
+                sendProject(this.editedProject, () => { this.editedProject = {} });
             } else {
                 sendProject(this.editedProject, (project) => {
                     this.editedProject.projectID = project.projectID;
-
+        
                     this.months = this.months.map((it, index) => {
                         if(index >= this.currentMonth){
                             it.projects.push(clone(this.editedProject))
@@ -108,18 +106,24 @@ const app = new Vue({
         }
     },
     computed: {
+        /**
+         * Gets the highest costing project from the list of projects
+         * @param { Vue } app
+         * @author Camille Cutrone
+         */
         getRoofOfChart(){
-            return (this.months[this.currentMonth]
-                        .projects || [])
-                        .map((it) => it.cost)
-                        .sort((a, b) => b - a)[0];
+            return (this.months[this.currentMonth].projects || [])
+                    .map((it) => it.cost)
+                    .sort((a, b) => b - a)[0];
         },
+        /**
+         * Retrives a list of strings that represent the value of the y levels of the chart
+         * @param { Vue } app
+         * @author Camille Cutrone
+         */
         getChartY(){
             return [0, 0, 0, 0, 0]
-                .fill(
-                    this.getRoofOfChart, 
-                    0, 4
-                )
+                .fill(this.getRoofOfChart, 0, 4)
                 .map((it, index) => ((it / (index + 1)) / 1000).toFixed(2) + "k");
         }
     }
