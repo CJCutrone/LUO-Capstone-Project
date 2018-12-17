@@ -59,10 +59,10 @@ const redirect = (req, resp) => {
  * @author Camille Cutrone
  */
 const requireAuthenticationAPI = (req, resp, next) => {
-    // if(!req.user) {
-    //     req.session.oauth2return = req.originalUrl;
-    //     resp.json({ error: { id: -1, message: "Must be signed in" }});
-    // }else 
+     if(!req.user) {
+         req.session.oauth2return = req.originalUrl;
+         resp.json({ error: { id: -1, message: "Must be signed in" }});
+     }else 
         next();
 };
 
@@ -74,10 +74,10 @@ const requireAuthenticationAPI = (req, resp, next) => {
  * @author Camille Cutrone
  */
 const requireAuthentication = (req, resp, next) => {
-    // if(!req.user) {
-    //     req.session.oauth2return = req.originalUrl;
-    //     resp.redirect("/login");
-    // }else 
+     if(!req.user) {
+         req.session.oauth2return = req.originalUrl;
+         resp.redirect("/login");
+     }else 
     next();
 };
 
